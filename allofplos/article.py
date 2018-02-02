@@ -14,6 +14,7 @@ from .plos_regex import validate_doi
 from .elements import (parse_article_date, get_contrib_info,
                        Journal, License, match_contribs_to_dicts)
 from .utils import dedent
+from .contributor_class import Contributor
 
 
 class Article:
@@ -378,8 +379,6 @@ class Article:
                     aff_dict[el.attrib['id']] = el.text.replace('\n', '').replace('\r', '').replace('\t', '')
         return aff_dict
 
-    def get_fn_dict(self):
-        """For a given PLOS article, get list of footnotes.
     @property
     def author_notes(self):
         """For a given PLOS article, get the author notes element.
@@ -412,6 +411,19 @@ class Article:
             new_fn_list.append(fn_dict)
         return new_fn_list
 
+    def pass_info_to_contrib(self):
+        """Combine the three dicts into one and pass to contributor class."""
+        corresp_elems = [el for el in self.author_notes if el.tag == 'corresp']
+        contributors = Contributor(self.doi,
+                                   self.contrib_list,
+                                   self.aff_dict(),
+                                   self.fn_list(),
+                                   corresp_elems)
+        return contributors
+
+    def get_fn_dict(self):
+        """For a given PLOS article, get list of footnotes as dictionaries.
+        *** DEPRECATE THIS ***
         Used with rids to map individual contributors to their institutions
         More about rids: https://jats.nlm.nih.gov/archiving/tag-library/1.1/attribute/rid.html
         See also get_rid_dict()
