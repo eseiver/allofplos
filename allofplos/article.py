@@ -417,8 +417,7 @@ class Article:
         contributors = Contributor(self.doi,
                                    self.contrib_list,
                                    self.aff_dict(),
-                                   self.fn_list(),
-                                   corresp_elems)
+                                   self.author_notes)
         return contributors
 
     def get_fn_dict(self):

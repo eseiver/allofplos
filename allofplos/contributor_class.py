@@ -9,12 +9,11 @@ class Contributor():
     To initialize this class, Article needs to pass lists and dicts of all three
     of these elements into __init__.
     """
-    def __init__(self, doi, contrib_list, aff_dict, fn_list, corresp_elems):
+    def __init__(self, doi, contrib_list, aff_dict, author_notes):
         self.doi = doi
         self.contrib_list = contrib_list
         self.aff_dict = aff_dict
-        self.fn_list = fn_list
-        self.corresp_elems = corresp_elems
+        self.author_notes = author_notes
 
         contrib_keys = ['contrib_initials',
                         'given_names',
@@ -32,12 +31,24 @@ class Contributor():
                         ]
 
     def parse_author_notes(self):
-        """Return tuple of into footnotes and corresponding author info"""
-        email_dict = corr_author_emails(self.doi, self.corresp_elems)
+        """Return tuple of corresponding author info and contributions."""
 
-        fn_id_list = [x.get('id', None) for x in self.fn_list]
+        corresp_elems = []
+        fn_elems = []
+        for note in self.author_notes:
+            if note.tag == 'corresp':
+                corresp_elems.append(note)
+            elif note.tag == 'fn':
+                fn_elems.append(note)
+            else:
+                assert note.tag in ['corresp', 'fn']
 
-        return email_dict.keys(), fn_id_list
+        email_dict = corr_author_emails(self.doi, corresp_elems)
+
+        con_elem = next(el for el in fn_elems if el.attrib.get('fn-type', None) == 'con')
+        contrib_dict = contributions_dict(self.doi, con_elem)
+
+        return email_dict, contrib_dict
 
 
 class Author(Contributor):
