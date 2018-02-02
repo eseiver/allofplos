@@ -344,7 +344,7 @@ class Article:
         """Elocation ID of the article."""
         return self.root.xpath('/article/front/article-meta/elocation-id')[0].text
 
-    def get_aff_dict(self):
+    def aff_dict(self):
         """For a given PLOS article, get list of contributor-affiliated institutions.
 
         Uses "rid"s to map individual contributors to their institutions
@@ -411,7 +411,7 @@ class Article:
                     fn_dict[el.attrib['id']] = el.text.replace('\n', '').replace('\r', '').replace('\t', '')
         return fn_dict
 
-    def get_corr_author_emails(self):
+    def corr_author_emails(self):
         """For an article, grab the email addresses of the corresponding authors.
         Parses the list of emails and groups by rid or by initials, if present.
         Can handle multiple emails for multiple authors if formatted correctly.
@@ -590,13 +590,13 @@ class Article:
         # TODO: also get funding information, data availability, COI, etc
 
         # get dictionary of ids to institutional affiliations & all other footnotes
-        aff_dict = self.get_aff_dict()
+        aff_dict = self.aff_dict()
         fn_dict = self.get_fn_dict()
         aff_dict.update(fn_dict)
         matching_error = False
 
         # get dictionary of corresponding author email addresses
-        email_dict = self.get_corr_author_emails()
+        email_dict = self.corr_author_emails()
 
         # get author contributions (if no credit taxonomy)
         credit_dict = self.get_contributions_dict()
@@ -1095,11 +1095,11 @@ class Article:
     @property
     def emails(self):
         """List of emails of corresponding author(s).
-        Unlike get_corr_author_emails() dict, it does not differentiate by author.
+        Unlike corr_author_emails() dict, it does not differentiate by author.
         Joins multiple emails into a single list.
         :return: list of corresponding author email addresses
         """
-        email_dict = self.get_corr_author_emails()
+        email_dict = self.corr_author_emails()
         email_list = []
         for k, v in email_dict.items():
             email_list.extend(v)

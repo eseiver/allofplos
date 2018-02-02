@@ -100,7 +100,7 @@ def get_author_type(contrib_element):
 def get_contrib_name(contrib_element):
     """Get the name for a single contributor from their accompanying <contrib> element.
     Also constructs their initials for later matching to article-level dictionaries about
-    contributors, including get_aff_dict() and get_fn_dict().
+    contributors, including aff_dict() and get_fn_dict().
     Can also handle 'collab' aka group authors with a group name but no surname or given names.
     :param contrib_element: An article XML element with the tag <contrib>
     :return: dictionary of a single contributor's given names, surname, initials, and group name
@@ -202,7 +202,7 @@ def match_contrib_initials_to_dict(contrib_dict, special_dict, matched_keys, con
     provided in the raw XML.
     See match_contribs_to_dicts() for how this matching process is iterated across contributors.
     :param contrib_dict: information about individual contributor, including their name and constructed initials
-    :param special_dict: usually either get_aff_dict() or get_credit_dict()
+    :param special_dict: usually either aff_dict() or get_credit_dict()
     :param matched_keys: list of keys in special_dict already matched that will be excluded
     :param contrib_key: The item in the contrib dictionary where the matched special_dict will be stored
     :return: updated contrib_dict that includes the newly matched special_dict
@@ -339,7 +339,7 @@ def match_author_names_to_emails(corr_author_list, email_dict):
 def match_contribs_to_dicts(contrib_list, special_dict, contrib_key):
     """
     :param contrib_list: list of contributors
-    :param special_dict: usually either get_aff_dict() or get_credit_dict()
+    :param special_dict: usually either aff_dict() or get_credit_dict()
     :param contrib_key: The item in the contrib dictionary where the matched special_dict will be stored
     """
     matching_error = False
