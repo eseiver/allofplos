@@ -380,6 +380,37 @@ class Article:
 
     def get_fn_dict(self):
         """For a given PLOS article, get list of footnotes.
+    @property
+    def author_notes(self):
+        """For a given PLOS article, get the author notes element.
+
+        This includes author emails as well as footnotes.
+        """
+        tags_to_notes = ["/",
+                         "article",
+                         "front",
+                         "article-meta",
+                         "author-notes"]
+        author_notes = self.get_element_xpath(tag_path_elements=tags_to_notes)
+        if author_notes:
+            assert len(author_notes) == 1
+            author_notes = author_notes[0]
+
+        return author_notes
+
+    def fn_list(self):
+        """For a given PLOS article, get list of footnotes as dictionaries."""
+        fn_list = [el for el in self.author_notes if el.tag == 'fn']
+        new_fn_list = []
+        for el in fn_list:
+            el_text = et.tostring(el,
+                                  method='text',
+                                  encoding='unicode').strip().replace('\n', '').replace('\r', '').replace('\t', '')
+            fn_dict = {}
+            fn_dict = {k: v for k, v in el.attrib.items()}
+            fn_dict['content'] = el_text
+            new_fn_list.append(fn_dict)
+        return new_fn_list
 
         Used with rids to map individual contributors to their institutions
         More about rids: https://jats.nlm.nih.gov/archiving/tag-library/1.1/attribute/rid.html
@@ -576,6 +607,17 @@ class Article:
             author_contributions[initials] = contrib_list
         return author_contributions
 
+    def contrib_list(self):
+        """Get list of contrib elements in article."""
+        tag_path = ["/",
+                    "article",
+                    "front",
+                    "article-meta",
+                    "contrib-group",
+                    "contrib"]
+        contrib_list = self.get_element_xpath(tag_path_elements=tag_path)
+        return contrib_list
+
     def get_contributors_info(self):
         """Get and organize information about each contributor for an article.
         This includes both authors and editors of the article.
@@ -602,13 +644,7 @@ class Article:
         credit_dict = self.get_contributions_dict()
 
         # get list of contributor elements (one per contributor)
-        tag_path = ["/",
-                    "article",
-                    "front",
-                    "article-meta",
-                    "contrib-group",
-                    "contrib"]
-        contrib_list = self.get_element_xpath(tag_path_elements=tag_path)
+        contrib_list = self.contrib_list()
         contrib_dict_list = []
 
         error_printed = False
