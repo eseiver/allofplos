@@ -414,10 +414,10 @@ class Article:
     def pass_info_to_contrib(self):
         """Combine the three dicts into one and pass to contributor class."""
         corresp_elems = [el for el in self.author_notes if el.tag == 'corresp']
-        contributors = Contributor(self.doi,
-                                   self.contrib_list,
+        contributors = Contributor(self.contrib_list,
                                    self.aff_dict(),
-                                   self.author_notes)
+                                   self.author_notes,
+                                   doi=self.doi)
         return contributors
 
     def get_fn_dict(self):

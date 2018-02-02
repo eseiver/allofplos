@@ -1,5 +1,6 @@
 from .contributor_elements import corr_author_emails, get_fn_list, contributions_dict
 
+
 class Contributor():
     """Class for authors and editors of PLOS articles.
 
@@ -9,7 +10,7 @@ class Contributor():
     To initialize this class, Article needs to pass lists and dicts of all three
     of these elements into __init__.
     """
-    def __init__(self, doi, contrib_list, aff_dict, author_notes):
+    def __init__(self, contrib_list, aff_dict, author_notes, doi=''):
         self.doi = doi
         self.contrib_list = contrib_list
         self.aff_dict = aff_dict
