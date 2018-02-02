@@ -1,4 +1,4 @@
-from .contributor_elements import corr_author_emails, get_fn_list
+from .contributor_elements import corr_author_emails, get_fn_list, contributions_dict
 
 class Contributor():
     """Class for authors and editors of PLOS articles.
@@ -35,6 +35,7 @@ class Contributor():
 
         corresp_elems = []
         fn_elems = []
+        contrib_dict = {}
         for note in self.author_notes:
             if note.tag == 'corresp':
                 corresp_elems.append(note)
@@ -45,8 +46,9 @@ class Contributor():
 
         email_dict = corr_author_emails(self.doi, corresp_elems)
 
-        con_elem = next(el for el in fn_elems if el.attrib.get('fn-type', None) == 'con')
-        contrib_dict = contributions_dict(self.doi, con_elem)
+        con_elem = next((el for el in fn_elems if el.attrib.get('fn-type') == 'con'), None)
+        if con_elem is not None:
+            contrib_dict = contributions_dict(self.doi, con_elem)
 
         return email_dict, contrib_dict
 
