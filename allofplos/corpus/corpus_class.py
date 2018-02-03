@@ -169,13 +169,15 @@ class Corpus():
         return resorted_hashtable
 
     @classmethod
-    def create(cls, directory=corpusdir, overwrite=False):
+    def create(cls, directory=None, overwrite=False):
         """ Create a PLOS corpus from scratch.
 
         Downloads and unzips the main PLOS .zip file hosted on Google Drive.
         :param directory: directory to download and unzip zip file
         :param overwrite: whether to overwrite existing files, defaults to False
         """
+        if directory is None:
+            directory = get_corpus_dir()
         os.makedirs(directory, exist_ok=True)
         if overwrite is False and len(os.listdir(directory)) > 2:
             print("Can't create corpus at {}; files already exist.".format(directory))
@@ -191,7 +193,7 @@ class Corpus():
 
 
     @classmethod
-    def from_dois(cls, dois, source=corpusdir, destination='testdir', overwrite=True):
+    def from_dois(cls, dois, source=None, destination='testdir', overwrite=True):
         """Initiate a corpus object using a doi list, with a source directory.
         Uses symlinks instead of creating duplicate article objects.
         All DOIs must correspond to articles in the source directory.
@@ -202,6 +204,8 @@ class Corpus():
         :param destination: new directory where will create symlinks to articles
         :param overwrite: if symlinks already exist in testdir, overwrite them
         """
+        if directory is None:
+            directory = get_corpus_dir()
         os.makedirs(destination, exist_ok=True)
 
         # make sure that all files exist in the source
