@@ -14,7 +14,7 @@ from .plos_regex import validate_doi
 from .elements import (parse_article_date, get_contrib_info,
                        Journal, License, match_contribs_to_dicts)
 from .utils import dedent
-from .contributor_class import ContributorList
+from .contributor import ContributorList
 
 
 class Article:
