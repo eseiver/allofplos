@@ -165,8 +165,8 @@ def get_credit_dict(doi, con_elem):
             initials_list.extend(v_new)
 
     # Re-do dictionary so it's by initials instead of by role
-    if [x[:4] for x in initials_list] != initials_list:
-        print(doi, initials_list)
+    # if [x[:4] for x in initials_list] != initials_list:
+    #     print(doi, initials_list)
 
     for initials in (set(initials_list)):
         contrib_list = []

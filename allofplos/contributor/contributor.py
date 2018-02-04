@@ -90,7 +90,7 @@ class Contributor():
                 try:
                     initials = ''.join([part[0].upper() for part in re.split('[-| |,|\.]+', given_names) if part]) + \
                                       ''.join([part[0] for part in re.split('[-| |,|\.]+', surname) if part[0] in string.ascii_uppercase])
-                except IndexError:
+                except (IndexError, TypeError) as e:
                     initials = ''
                 contrib_name = dict(initials=initials,
                                     given_names=given_names,

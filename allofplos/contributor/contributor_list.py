@@ -63,15 +63,18 @@ class ContributorList():
         self.id_dict = id_dict
 
     def get_contributors(self):
-        author_list = []
-        editor_list = []
-        for contrib_elem in self.contrib_elems():
-            if contrib_elem.attrib['contrib-type'] == 'author':
-                author_list.append(Author(contrib_elem))
-            if contrib_elem.attrib['contrib-type'] == 'editor':
-                editor_list.append(Editor(contrib_elem))
-        self.authors = author_list
-        self.editors = editor_list
+        if self.authors is None and self.editors is None:
+            author_list = []
+            editor_list = []
+            for contrib_elem in self.contrib_elems():
+                if contrib_elem.attrib.get('contrib-type') == 'author':
+                    author_list.append(Author(contrib_elem))
+                if contrib_elem.attrib.get('contrib-type') == 'editor':
+                    editor_list.append(Editor(contrib_elem))
+            self.authors = author_list
+            self.editors = editor_list
+        return self.authors + self.editors
+
 
 
 

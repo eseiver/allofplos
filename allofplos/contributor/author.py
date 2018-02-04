@@ -31,7 +31,6 @@ class Author(Contributor):
         Authors can be 'corresponding' or 'contributing'. Depending on the paper, some elements have a 
         top-level "corresp" attribute that equal yes; otherwise, corresponding status can be inferred
         from the existence of the <xref> attribute ref-type="corresp"
-        :param contrib_element: An article XML element with the tag <contrib>
         :return: author type (corresponding, contributing, None)
         """
         answer_dict = {
@@ -40,16 +39,15 @@ class Author(Contributor):
         }
 
         author_type = None
-        if self.contrib_element.get('contrib-type', None) == 'author':
-            corr = self.contrib_element.get('corresp', None)
-            if corr:
-                author_type = answer_dict.get(corr, None)
+        corr = self.contrib_element.get('corresp', None)
+        if corr:
+            author_type = answer_dict.get(corr, None)
+        else:
+            temp = self.rid_dict.get('corresp', None)
+            if temp:
+                author_type = answer_dict.get("yes", None)
             else:
-                temp = self.contrib_element.get('corresp', None)
-                if temp:
-                    author_type = answer_dict.get("yes", None)
-                else:
-                    author_type = answer_dict.get("no", None)
+                author_type = answer_dict.get("no", None)
 
         self.author_type = author_type
 
