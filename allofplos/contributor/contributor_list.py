@@ -1,7 +1,11 @@
+import lxml.etree as et
+import re
+
 from .author import Author
 from .editor import Editor
 
-from .contributor_elements import corr_author_emails, get_credit_dict
+from .contributor_elements import (corr_author_emails, get_credit_dict, match_contribs_to_dicts,
+                                   )
 
 
 class ContributorList():
@@ -25,6 +29,7 @@ class ContributorList():
         self.authors = None
         self.editors = None
         self.get_contributors()
+        self.match_contribs_to_fns()
 
     def parse_author_notes(self):
         """Return tuple of corresponding author info and credit for their contributions."""
@@ -74,6 +79,30 @@ class ContributorList():
             self.authors = author_list
             self.editors = editor_list
         return self.authors + self.editors
+
+    def get_corresponding_authors(self):
+        return [auth for auth in self.authors if auth.author_type == 'corresponding']
+
+    def match_contribs_to_affs(self):
+        """Match the values in self.aff_dict to the rids for each contributor."""
+        for contrib in self.get_contributors():
+            aff_keys = contrib.rid_dict.get('aff')
+            contrib.aff_list = [self.aff_dict[k] for k in aff_keys]
+
+    def match_contribs_to_fns(self):
+        """Match the footnote values in self.id_dict to the rids for each contributor."""
+        for contrib in self.get_contributors():
+            contrib.footnotes = {}
+            if contrib.rid_dict.get('fn'):
+                for fn_id in contrib.rid_dict['fn']:
+                    new_id = next(iter(self.id_dict[fn_id].keys()))
+                    if new_id in contrib.footnotes:
+                        import pdb; pdb.set_trace()    
+                    assert new_id not in contrib.footnotes
+                    contrib.footnotes.update(self.id_dict[fn_id])
+
+
+
 
 
 
