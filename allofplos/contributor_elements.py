@@ -116,7 +116,7 @@ def get_fn_list(fn_list):
     return new_fn_list
 
 
-def contributions_dict(doi, con_elem):
+def get_credit_dict(doi, con_elem):
     """For articles that don't use the CREDiT taxonomy, compile a dictionary of author
     contribution types matched to author initials.
     Work in progress!!

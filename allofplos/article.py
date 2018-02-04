@@ -14,7 +14,7 @@ from .plos_regex import validate_doi
 from .elements import (parse_article_date, get_contrib_info,
                        Journal, License, match_contribs_to_dicts)
 from .utils import dedent
-from .contributor_class import Contributor
+from .contributor_class import ContributorList
 
 
 class Article:
@@ -414,10 +414,10 @@ class Article:
     def pass_info_to_contrib(self):
         """Combine the three dicts into one and pass to contributor class."""
         corresp_elems = [el for el in self.author_notes if el.tag == 'corresp']
-        contributors = Contributor(self.contrib_list,
-                                   self.aff_dict(),
-                                   self.author_notes,
-                                   doi=self.doi)
+        contributors = ContributorList(self.contrib_list,
+                                       self.aff_dict(),
+                                       self.author_notes,
+                                       doi=self.doi)
         return contributors
 
     def get_fn_dict(self):
