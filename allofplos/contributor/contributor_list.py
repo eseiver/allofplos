@@ -20,6 +20,7 @@ class ContributorList():
         self.author_notes = author_notes
         self.email_dict = None
         self.credit_dict = None
+        self.id_dict = None
         self.parse_author_notes()
         self.authors = None
         self.editors = None
@@ -45,8 +46,21 @@ class ContributorList():
         if con_elem is not None:
             credit_dict = get_credit_dict(self.doi, con_elem)
 
+        fn_misc = [el for el in fn_elems if el.attrib.get('fn-type') not in ['con', 'conflict'] and el.attrib.get('id')]
+        fn_dict = {}
+        id_dict = {}
+        for el in fn_misc:
+            fn_dict[el.attrib.get('fn-type')] = re.sub('^[^a-zA-z]*|[^a-zA-Z]*$',
+                                                       '',
+                                                       et.tostring(el,
+                                                                   method='text',
+                                                                   encoding='unicode'))
+            assert id_dict.get(el.attrib.get('id')) is None
+            id_dict[el.attrib.get('id')] = fn_dict
+
         self.email_dict = email_dict
         self.credit_dict = credit_dict
+        self.id_dict = id_dict
 
     def get_contributors(self):
         author_list = []
