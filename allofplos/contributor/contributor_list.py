@@ -92,7 +92,8 @@ class ContributorList():
         """Match the values in self.aff_dict to the rids for each contributor."""
         for contrib in self.get_contributors():
             aff_keys = contrib.rid_dict.get('aff')
-            contrib.aff_list = [self.aff_dict[k] for k in aff_keys]
+            contrib.affiliations = [self.aff_dict[k] for k in aff_keys]
+
 
     def match_contribs_to_fns(self):
         """Match the footnote values in self.id_dict to the rids for each contributor."""
