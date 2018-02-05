@@ -52,21 +52,23 @@ class ContributorList():
         if con_elem is not None:
             credit_dict = get_credit_dict(self.doi, con_elem)
 
-        fn_misc = [el for el in fn_elems if el.attrib.get('fn-type') not in ['con', 'conflict'] and el.attrib.get('id')]
+        fn_misc = [el for el in fn_elems if el.attrib.get('fn-type') != 'conflict' and el.attrib.get('id')]
         fn_dict = {}
         id_dict = {}
         for el in fn_misc:
+            idd = el.attrib.get('id')
+            assert id_dict.get(idd) is None
             fn_dict[el.attrib.get('fn-type')] = re.sub('^[^a-zA-z]*|[^a-zA-Z]*$',
                                                        '',
                                                        et.tostring(el,
                                                                    method='text',
                                                                    encoding='unicode'))
-            assert id_dict.get(el.attrib.get('id')) is None
-            id_dict[el.attrib.get('id')] = fn_dict
+            id_dict[idd] = fn_dict
 
         self.email_dict = email_dict
         self.credit_dict = credit_dict
         self.id_dict = id_dict
+
 
     def get_contributors(self):
         if self.authors is None and self.editors is None:
@@ -75,8 +77,10 @@ class ContributorList():
             for contrib_elem in self.contrib_elems():
                 if contrib_elem.attrib.get('contrib-type') == 'author':
                     author_list.append(Author(contrib_elem))
-                if contrib_elem.attrib.get('contrib-type') == 'editor':
+                elif contrib_elem.attrib.get('contrib-type') == 'editor':
                     editor_list.append(Editor(contrib_elem))
+                else:
+                    assert contrib_elem.attrib.get('contrib-type') in ['author', 'editor']
             self.authors = author_list
             self.editors = editor_list
         return self.authors + self.editors
