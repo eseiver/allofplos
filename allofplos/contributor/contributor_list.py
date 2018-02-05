@@ -37,13 +37,14 @@ class ContributorList():
         corresp_elems = []
         fn_elems = []
         credit_dict = {}
-        for note in self.author_notes:
-            if note.tag == 'corresp':
-                corresp_elems.append(note)
-            elif note.tag == 'fn':
-                fn_elems.append(note)
-            else:
-                assert note.tag in ['corresp', 'fn']
+        for elem in self.author_notes:
+            for note in elem:
+                if note.tag == 'corresp':
+                    corresp_elems.append(note)
+                elif note.tag == 'fn':
+                    fn_elems.append(note)
+                else:
+                    assert note.tag in ['corresp', 'fn']
 
         email_dict = corr_author_emails(self.doi, corresp_elems)
 

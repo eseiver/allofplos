@@ -384,7 +384,10 @@ class Article:
         """For a given PLOS article, get the author notes element.
 
         This includes author emails as well as footnotes.
+        Some articles include a fn-group (footnote-group) element.
+        :return: list of elements containing author notes and/or footnotes
         """
+        author_notes_list = []
         tags_to_notes = ["/",
                          "article",
                          "front",
@@ -394,8 +397,15 @@ class Article:
         if author_notes:
             assert len(author_notes) == 1
             author_notes = author_notes[0]
+            author_notes_list.append(author_notes)
 
-        return author_notes
+        footnote_group = self.root.xpath('.//fn-group')
+        if footnote_group:
+            assert len(footnote_group) == 1
+            footnotes = footnote_group[0]
+            author_notes_list.append(footnotes)
+
+        return author_notes_list
 
     def fn_list(self):
         """For a given PLOS article, get list of footnotes as dictionaries."""
