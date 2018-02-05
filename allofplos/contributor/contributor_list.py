@@ -100,11 +100,30 @@ class ContributorList():
             contrib.footnotes = {}
             if contrib.rid_dict.get('fn'):
                 for fn_id in contrib.rid_dict['fn']:
-                    new_id = next(iter(self.id_dict[fn_id].keys()))
-                    if new_id in contrib.footnotes:
-                        import pdb; pdb.set_trace()    
-                    assert new_id not in contrib.footnotes
-                    contrib.footnotes.update(self.id_dict[fn_id])
+                    try:
+                        new_id = next(iter(self.id_dict[fn_id].keys()))
+                        assert new_id not in contrib.footnotes
+                        contrib.footnotes.update(self.id_dict[fn_id])
+                    except KeyError:
+                        # handle the rare cases where footnotes weren't categorized
+                        try:
+                            # first: affiliations
+                            new_id = next(iter(self.aff_dict[fn_id]))
+                            contrib.affiliations = self.aff_dict[fn_id]
+                            print('affiliation updated for {}'.format(self.aff_dict))
+                        except KeyError:
+                            # second: email (for authors only)
+                            try:
+                                if contrib.contrib_type == 'author':
+                                    new_id = next(iter(self.email_dict[fn_id]))
+                                    assert not contrib.email
+                                    contrib.email = self.email_dict[fn_id]
+                                    print('email updated for {}'.format(self.email_dict))
+                            except KeyError:
+                                # this can happen if the email field is mult authors
+                                # ignore the rid in this case
+                                assert len(self.email_dict) > 1
+
 
 
 
