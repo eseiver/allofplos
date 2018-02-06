@@ -43,6 +43,7 @@ class Article:
         self.reset_memoized_attrs()
         self._editor = None
         self._contributors = None
+        self._contributors_old = None
     
     def __eq__(self, other):
         doi_eq = self.doi == other.doi
@@ -1112,19 +1113,20 @@ class Article:
         return dict(License(permissions, self.doi))
 
     @property
-    def contributors(self):
+    def contributors_old(self):
         """ List of contributors to an article.
 
         Including authors and editors
+        DEPRECATING in favor of ContributorList & Contributor classes.
         Stores as attribute after first access
         :returns: list of dictionaries for each contributor
         :rtype: {list}
         """
-        if self._contributors is None:
-            self._contributors = self.get_contributors_info()
+        if self._contributors_old is None:
+            self._contributors_old = self.get_contributors_info()
         else:
             pass
-        return self._contributors
+        return self._contributors_old
 
     @property
     def authors(self):
@@ -1132,14 +1134,14 @@ class Article:
 
         For more about authorship criteria, see http://journals.plos.org/plosone/s/authorship
         """
-        contributors = self.contributors
+        contributors = self.contributors_old
         return [contrib for contrib in contributors if contrib.get('contrib_type', None) == 'author']
 
     @property
     def corr_author(self):
         """List of corresponding authors of an article.
         """
-        contributors = self.contributors
+        contributors = self.contributors_old
         return [contrib for contrib in contributors if contrib.get('author_type', None) == 'corresponding']
 
     @property
@@ -1148,7 +1150,7 @@ class Article:
 
         For more about the editorial process, see http://journals.plos.org/plosone/s/editorial-and-peer-review-process
         """
-        contributors = self.contributors
+        contributors = self.contributors_old
         return [contrib for contrib in contributors if contrib.get('contrib_type', None) == 'editor']
 
     @property
