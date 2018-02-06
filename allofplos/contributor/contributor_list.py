@@ -4,8 +4,7 @@ import re
 from .author import Author
 from .editor import Editor
 
-from .contributor_elements import (corr_author_emails, get_credit_dict, match_contribs_to_dicts,
-                                   )
+from .contributor_elements import (corr_author_emails, get_credit_dict)
 
 
 class ContributorList():
@@ -29,10 +28,11 @@ class ContributorList():
         self.authors = None
         self.editors = None
         self.get_contributors()
+        self.match_contribs_to_affs()
         self.match_contribs_to_fns()
 
     def parse_author_notes(self):
-        """Return tuple of corresponding author info and credit for their contributions."""
+        """Parse footnotes and author notes into email_dict, credit_dict, and id_dict."""
 
         corresp_elems = []
         fn_elems = []
@@ -48,27 +48,50 @@ class ContributorList():
 
         email_dict = corr_author_emails(self.doi, corresp_elems)
 
-        con_elem = next((el for el in fn_elems if el.attrib.get('fn-type') == 'con'), None)
-        if con_elem is not None:
-            credit_dict = get_credit_dict(self.doi, con_elem)
+        # some 'con'-type elements need to be turned into credit_dict.
+        # go through them and turn them into credit_dict or else add to the misc elems.
+        # misc_elems will need to be matched to individual authors.
+        misc_elems = []
+        con_elems = [el for el in fn_elems if el.attrib.get('fn-type') == 'con']
+        credit_dict_bool = False
+        for con_elem in con_elems:
+            if not credit_dict_bool:
+                # only try creating the credit dict if it doesn't exist yet
+                credit_dict = get_credit_dict(self.doi, con_elem)
+                if credit_dict:
+                    credit_dict_bool = True
+                else:
+                    misc_elems.append(con_elem)
+            else:
+                # credit_dict already exists, so it must be miscellaneous
+                misc_elems.append(con_elem)
 
-        fn_misc = [el for el in fn_elems if el.attrib.get('fn-type') != 'conflict' and el.attrib.get('id')]
+        fn_misc = [el for el in fn_elems if el.attrib.get('fn-type') not in ['conflict', 'con'] and el.attrib.get('id')]
+
+        # add back the 'con'-type elements that are not making credit_dict, if any
+        fn_misc.extend(misc_elems)
+
         fn_dict = {}
         id_dict = {}
         for el in fn_misc:
+            fn_dict = {}
             idd = el.attrib.get('id')
             assert id_dict.get(idd) is None
-            fn_dict[el.attrib.get('fn-type')] = re.sub('^[^a-zA-z]*|[^a-zA-Z]*$',
-                                                       '',
-                                                       et.tostring(el,
-                                                                   method='text',
-                                                                   encoding='unicode'))
+            elem_text = re.sub('^[^a-zA-z]*|[^a-zA-Z]*$',
+                               '',
+                               et.tostring(el,
+                                           method='text',
+                                           encoding='unicode'))
+            elem_text = re.sub('[a-z]Current', 'Current', elem_text).lstrip('a').lstrip('b').lstrip('c').strip()
+            fn_dict[el.attrib.get('fn-type')] = elem_text
             id_dict[idd] = fn_dict
+
+        # # add key-value pairs in aff_dict to id_dict
+        # id_dict.update(self.aff_dict)
 
         self.email_dict = email_dict
         self.credit_dict = credit_dict
         self.id_dict = id_dict
-
 
     def get_contributors(self):
         if self.authors is None and self.editors is None:
@@ -94,7 +117,6 @@ class ContributorList():
             aff_keys = contrib.rid_dict.get('aff')
             contrib.affiliations = [self.aff_dict[k] for k in aff_keys]
 
-
     def match_contribs_to_fns(self):
         """Match the footnote values in self.id_dict to the rids for each contributor."""
         for contrib in self.get_contributors():
@@ -103,14 +125,19 @@ class ContributorList():
                 for fn_id in contrib.rid_dict['fn']:
                     try:
                         new_id = next(iter(self.id_dict[fn_id].keys()))
-                        assert new_id not in contrib.footnotes
-                        contrib.footnotes.update(self.id_dict[fn_id])
+                        if new_id not in contrib.footnotes:
+                            contrib.footnotes[new_id] = [next(iter(self.id_dict[fn_id].values()))]
+                        else:
+                            contrib.footnotes[new_id].append(next(iter(self.id_dict[fn_id].values())))
                     except KeyError:
                         # handle the rare cases where footnotes weren't categorized
                         try:
                             # first: affiliations
                             new_id = next(iter(self.aff_dict[fn_id]))
-                            contrib.affiliations = self.aff_dict[fn_id]
+                            if not hasattr(contrib, 'affiliations'):
+                                contrib.affiliations = [next(iter(self.id_dict[fn_id].values()))]
+                            else:
+                                contrib.affiliations.append(next(iter(self.id_dict[fn_id].values())))
                             print('affiliation updated for {}'.format(self.aff_dict))
                         except KeyError:
                             # second: email (for authors only)
@@ -124,7 +151,8 @@ class ContributorList():
                                 # this can happen if the email field is mult authors
                                 # ignore the rid in this case
                                 assert len(self.email_dict) > 1
-
+            if len(contrib.footnotes) > 1:
+                print(contrib.footnotes)
 
 
 
