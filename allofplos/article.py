@@ -42,6 +42,7 @@ class Article:
         self.directory = directory if directory else get_corpus_dir()
         self.reset_memoized_attrs()
         self._editor = None
+        self._contributors = None
     
     def __eq__(self, other):
         doi_eq = self.doi == other.doi
@@ -421,14 +422,15 @@ class Article:
             new_fn_list.append(fn_dict)
         return new_fn_list
 
-    def pass_info_to_contrib(self):
-        """Combine the three dicts into one and pass to contributor class."""
-        corresp_elems = [el for el in self.author_notes if el.tag == 'corresp']
-        contributors = ContributorList(self.contrib_list,
-                                       self.aff_dict(),
-                                       self.author_notes,
-                                       doi=self.doi)
-        return contributors
+    @property
+    def contributors(self):
+        """Collect and pass to Contributor class its needed info. Memoize result."""
+        if self._contributors is None:
+            self._contributors = ContributorList(self.contrib_list,
+                                           self.aff_dict(),
+                                           self.author_notes,
+                                           doi=self.doi)
+        return self._contributors
 
     def get_fn_dict(self):
         """For a given PLOS article, get list of footnotes as dictionaries.
