@@ -2,26 +2,27 @@ import lxml.etree as et
 import re
 import string
 
+contrib_keys = ['initials',
+                'given_names',
+                'surname',
+                'group_name',
+                'ids',
+                'rid_dict',
+                'contrib_type',
+                'author_type',
+                'editor_type',
+                'email',
+                'affiliations',
+                'author_roles',
+                'footnotes'
+                ]
+
 
 class Contributor():
     """An individual contributor on a PLOS article.
 
     Instantiated with <contrib> element by Contributor_Group class."""
     def __init__(self, contrib_element, contrib_type=None):
-        self.contrib_keys = ['initials',
-                            'given_names',
-                            'surname',
-                            'group_name',
-                            'ids',
-                            'rid_dict',
-                            'contrib_type',
-                            'author_type',
-                            'editor_type',
-                            'email',
-                            'affiliations',
-                            'author_roles',
-                            'footnotes'
-                            ]
         self.contrib_element = contrib_element
         self.contrib_type = contrib_type
         if self.contrib_type is None:

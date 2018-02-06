@@ -1,5 +1,19 @@
 from .contributor import Contributor
 
+author_keys = ['initials',
+               'given_names',
+               'surname',
+               'group_name',
+               'ids',
+               'rid_dict',
+               'contrib_type',
+               'author_type',
+               'email',
+               'affiliations',
+               'author_roles',
+               'footnotes',
+               ]
+
 
 class Author(Contributor):
     """Class for authors of PLOS articles.
@@ -8,19 +22,6 @@ class Author(Contributor):
     """
     def __init__(self, contrib_element):
         Contributor.__init__(self, contrib_element, contrib_type='author')
-        author_keys = ['initials',
-                        'given_names',
-                        'surname',
-                        'group_name',
-                        'ids',
-                        'rid_dict',
-                        'contrib_type',
-                        'author_type',
-                        'email',
-                        'affiliations',
-                        'author_roles',
-                        'footnotes',
-                        ]
         self.author_type = None
         self.get_author_type()
         self.credit_dict = None
