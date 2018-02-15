@@ -95,13 +95,13 @@ class Corpus():
         :return: a list of random DOIs for analysis
         """
 
-        return random.choice(self.dois)
+        random.sample(self.dois, count)
 
     def random_doi(self):
-        """Get a single random DOI."""
-        return random
+        """Get a single random DOI from local corpus files."""
+        return random.choice(self.dois)
 
-    def hashtable(self, directory=directory):
+    def hashtable(self):
         """For every XML file in the corpus, create a dict of its DOI to its filehash.
 
         :return: dict of article DOIs to hashes
@@ -195,7 +195,6 @@ class Corpus():
             print("Corpus created with {} files".format(len(os.listdir(directory))))
             return cls(directory=directory)
 
-
     @classmethod
     def from_dois(cls, dois, source=None, destination='testdir', overwrite=True):
         """Initiate a corpus object using a doi list, with a source directory.
@@ -208,8 +207,8 @@ class Corpus():
         :param destination: new directory where will create symlinks to articles
         :param overwrite: if symlinks already exist in testdir, overwrite them
         """
-        if directory is None:
-            directory = get_corpus_dir()
+        if source is None:
+            source = get_corpus_dir()
         os.makedirs(destination, exist_ok=True)
 
         # make sure that all files exist in the source
