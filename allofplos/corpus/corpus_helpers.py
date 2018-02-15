@@ -3,7 +3,7 @@ import hashlib
 
 import requests
 
-from .transformations import BASE_URL_API
+from ..transformations import BASE_URL_API
 
 BLOCKSIZE = 65536
 hasher = hashlib.sha256()
