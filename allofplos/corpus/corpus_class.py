@@ -10,7 +10,7 @@ from .. import get_corpus_dir, Article
 from ..transformations import filename_to_doi, doi_to_path
 from .corpus_helpers import hash_file
 from .gdrive import (get_zip_metadata, download_file_from_google_drive, unzip_articles,
-                     zip_id, local_zip)
+                     ZIP_ID, LOCAL_ZIP)
 
 hash_json = 'corpus_hash.json'
 
@@ -95,7 +95,11 @@ class Corpus():
         :return: a list of random DOIs for analysis
         """
 
-        return random.sample(self.dois, count)
+        return random.choice(self.dois)
+
+    def random_doi(self):
+        """Get a single random DOI."""
+        return random
 
     def hashtable(self, directory=directory):
         """For every XML file in the corpus, create a dict of its DOI to its filehash.
@@ -184,7 +188,7 @@ class Corpus():
             return None
         else:
             zip_date, zip_size, metadata_path = get_zip_metadata()
-            zip_path = download_file_from_google_drive(zip_id, local_zip, file_size=zip_size,
+            zip_path = download_file_from_google_drive(ZIP_ID, LOCAL_ZIP, file_size=zip_size,
                                                        destination=directory)
             unzip_articles(file_path=zip_path, extract_directory=directory)
             os.remove(metadata_path)
