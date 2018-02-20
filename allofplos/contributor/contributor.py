@@ -54,6 +54,18 @@ class Contributor():
             rid_list = [el.attrib.get('rid', None) for el in subelems if el.tag == 'xref' and el.attrib.get('ref-type', 'fn') == rid_type]
             rid_dict[rid_type] = rid_list
 
+        # getting aff in the right place if ref-type is missing
+        for k, v in rid_dict.items():
+            if k != 'aff':
+                aff_items = [item for item in v if item.startswith('aff')]
+                if aff_items:
+                    print('missing ref-type for affiliation item')
+                    if rid_dict.get('aff', None):
+                        rid_dict['aff'].extend(aff_items)
+                    else:
+                        rid_dict['aff'] = aff_items
+                    rid_dict[k] = [item for item in v if not item.startswith('aff')]
+
         self.rid_dict = rid_dict
 
     def get_name(self):
