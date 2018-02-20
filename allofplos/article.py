@@ -405,7 +405,8 @@ class Article:
         if footnote_group:
             assert len(footnote_group) == 1
             footnotes = footnote_group[0]
-            author_notes_list.append(footnotes)
+            if len(et.tostring(footnotes, method='text', encoding='unicode').strip()):
+                author_notes_list.append(footnotes)
 
         return author_notes_list
 
