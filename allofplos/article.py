@@ -640,6 +640,7 @@ class Article:
                     "contrib-group",
                     "contrib"]
         contrib_list = self.get_element_xpath(tag_path_elements=tag_path)
+        contrib_list = [c for c in contrib_list if c.attrib.get('contrib-type', None)]
         return contrib_list
 
     def get_contributors_info(self):
