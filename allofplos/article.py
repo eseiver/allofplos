@@ -401,12 +401,11 @@ class Article:
             author_notes = author_notes[0]
             author_notes_list.append(author_notes)
 
-        footnote_group = self.root.xpath('.//fn-group')
-        if footnote_group:
-            assert len(footnote_group) == 1
-            footnotes = footnote_group[0]
-            if len(et.tostring(footnotes, method='text', encoding='unicode').strip()):
-                author_notes_list.append(footnotes)
+        footnote_groups = self.root.xpath('.//fn-group')
+        if footnote_groups:
+            for fn_group in footnote_groups:
+                if len(et.tostring(fn_group, method='text', encoding='unicode').strip()):
+                    author_notes_list.append(fn_group)
 
         return author_notes_list
 
