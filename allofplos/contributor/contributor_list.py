@@ -28,8 +28,8 @@ class ContributorList():
         self.authors = None
         self.editors = None
         self.get_contributors()
-        self.match_contribs_to_affs()
-        self.match_contribs_to_fns()
+        # self.match_contribs_to_affs()
+        self.match_contribs_to_rids()
 
     def parse_author_notes(self):
         """Parse footnotes and author notes into email_dict, credit_dict, and id_dict."""
@@ -87,7 +87,7 @@ class ContributorList():
             id_dict[idd] = fn_dict
 
         # # add key-value pairs in aff_dict to id_dict
-        # id_dict.update(self.aff_dict)
+        id_dict.update(self.aff_dict)
 
         self.email_dict = email_dict
         self.credit_dict = credit_dict
@@ -111,49 +111,62 @@ class ContributorList():
     def get_corresponding_authors(self):
         return [auth for auth in self.authors if auth.author_type == 'corresponding']
 
-    def match_contribs_to_affs(self):
-        """Match the values in self.aff_dict to the rids for each contributor."""
-        for contrib in self.get_contributors():
-            contrib.affiliations = []
-            aff_keys = contrib.rid_dict.get('aff')
-            if aff_keys:
-                contrib.affiliations = [self.aff_dict[k] for k in aff_keys]
+    # def match_contribs_to_affs(self):
+    #     """Match the values in self.aff_dict to the rids for each contributor."""
+    #     for contrib in self.get_contributors():
+    #         contrib.affiliations = []
+    #         aff_keys = contrib.rid_dict.get('aff')
+    #         if aff_keys:
+    #             contrib.affiliations = [self.aff_dict[k] for k in aff_keys]
             # elif self.aff_dict and not contrib['name'].get('group_name', None):  # exclude collabs
                 # print('affiliations missing for {}, {}'.format(self.doi, contrib['name']))
 
-    def match_contribs_to_fns(self):
+    def match_contribs_to_rids(self):
         """Match the footnote values in self.id_dict to the rids for each contributor."""
         for contrib in self.get_contributors():
             contrib.footnotes = {}
-            if contrib.rid_dict.get('fn'):
-                for fn_id in contrib.rid_dict['fn']:
-                    try:
-                        new_id = next(iter(self.id_dict[fn_id].keys()))
-                        if new_id not in contrib.footnotes:
-                            contrib.footnotes[new_id] = [next(iter(self.id_dict[fn_id].values()))]
-                        else:
-                            contrib.footnotes[new_id].append(next(iter(self.id_dict[fn_id].values())))
-                    except KeyError:
-                        # handle the rare cases where footnotes weren't categorized
-                        try:
-                            # first: affiliations
-                            new_id = next(iter(self.aff_dict[fn_id]))
-                            if not hasattr(contrib, 'affiliations'):
-                                contrib.affiliations = [next(iter(self.id_dict[fn_id].values()))]
-                            else:
-                                contrib.affiliations.append(next(iter(self.id_dict[fn_id].values())))
-                            print('affiliation updated for {}'.format(self.aff_dict))
-                        except KeyError:
-                            # second: email (for authors only)
-                            try:
-                                if contrib.contrib_type == 'author':
-                                    new_id = next(iter(self.email_dict[fn_id]))
-                                    assert not contrib.email
-                                    contrib.email = self.email_dict[fn_id]
-                                    print('email updated for {}'.format(self.email_dict))
-                            except KeyError:
-                                # this can happen if the email field is mult authors
-                                # ignore the rid in this case
-                                assert len(self.email_dict) > 1
+            contrib.affiliations = []
+            # if contrib.rid_dict.get('fn'):
+                # for fn_id in contrib.rid_dict['fn']:
+                #     try:
+                #         new_id = next(iter(self.id_dict[fn_id].keys()))
+                #         if new_id not in contrib.footnotes:
+                #             contrib.footnotes[new_id] = [next(iter(self.id_dict[fn_id].values()))]
+                #         else:
+                #             contrib.footnotes[new_id].append(next(iter(self.id_dict[fn_id].values())))
+                #     except KeyError:
+                #         # handle the rare cases where footnotes weren't categorized
+                #         try:
+                #             # first: affiliations
+                #             new_id = next(iter(self.aff_dict[fn_id]))
+                #             if not hasattr(contrib, 'affiliations'):
+                #                 contrib.affiliations = [next(iter(self.id_dict[fn_id].values()))]
+                #             else:
+                #                 contrib.affiliations.append(next(iter(self.id_dict[fn_id].values())))
+                #             print('affiliation updated for {}'.format(self.aff_dict))
+                #         except KeyError:
+                #             # second: email (for authors only)
+                #             try:
+                #                 if contrib.contrib_type == 'author':
+                #                     new_id = next(iter(self.email_dict[fn_id]))
+                #                     assert not contrib.email
+                #                     contrib.email = self.email_dict[fn_id]
+                #                     print('email updated for {}'.format(self.email_dict))
+                #             except KeyError:
+                #                 # this can happen if the email field is mult authors
+                #                 # ignore the rid in this case
+                #                 assert len(self.email_dict) > 1
+            for rid, rid_type in contrib.rid_dict.items():
+                value = self.id_dict[rid]
+                if rid_type == 'aff':
+                    contrib.affiliations.append(value)
+                else:
+                    if contrib.footnotes.get(rid_type, None):
+                        contrib.footnotes[rid_type].update(value)
+                    else:
+                        contrib.footnotes[rid_type] = value
+            # print(contrib.footnotes, contrib.affiliations)
+
+
             # if len(contrib.footnotes) > 1:
             #     print(self.doi, contrib.footnotes)

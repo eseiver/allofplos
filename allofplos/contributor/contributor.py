@@ -47,26 +47,30 @@ class Contributor():
         rid_dict = {}
         subelems = self.contrib_element.getchildren()
         # get list of ref-types
-        rid_types = set([el.attrib.get('ref-type', 'fn') for el in subelems if el.tag == 'xref'])
+        # rid_types = set([el.attrib.get('ref-type', 'fn') for el in subelems if el.tag == 'xref'])
 
-        # make dict of ref-types to the actual ref numbers (rids)
-        for rid_type in rid_types:
-            rid_list = [el.attrib.get('rid', None) for el in subelems if el.tag == 'xref' and el.attrib.get('ref-type', 'fn') == rid_type]
-            rid_dict[rid_type] = rid_list
+        # # make dict of ref-types to the actual ref numbers (rids)
+        # for rid_type in rid_types:
+        #     rid_list = [el.attrib.get('rid', None) for el in subelems if el.tag == 'xref' and el.attrib.get('ref-type', 'fn') == rid_type]
+        #     rid_dict[rid_type] = rid_list
 
-        # getting aff in the right place if ref-type is missing
-        for k, v in rid_dict.items():
-            if k != 'aff':
-                aff_items = [item for item in v if item.startswith('aff')]
-                if aff_items:
-                    print('missing ref-type for affiliation item')
-                    if rid_dict.get('aff', None):
-                        rid_dict['aff'].extend(aff_items)
-                    else:
-                        rid_dict['aff'] = aff_items
-                    rid_dict[k] = [item for item in v if not item.startswith('aff')]
+        # # getting aff in the right place if ref-type is missing
+        # for k, v in rid_dict.items():
+        #     if k not in ['aff', 'current-aff']:
+        #         aff_items = [item for item in v if item.startswith('aff')]
+        #         if aff_items:
+        #             print('missing ref-type for affiliation item')
+        #             if rid_dict.get('aff', None):
+        #                 rid_dict['aff'].extend(aff_items)
+        #             else:
+        #                 rid_dict['aff'] = aff_items
+        #             rid_dict[k] = [item for item in v if not item.startswith('aff')]
+        for elem in subelems:
+            if elem.tag == 'xref' and 'cor' not in elem.attrib.get('rid', None):
+                rid_dict[elem.attrib['rid']] = elem.attrib.get('ref-type', 'fn')
 
         self.rid_dict = rid_dict
+        # print(rid_dict)
 
     def get_name(self):
         """Get the name for a single contributor from their accompanying <contrib> element.
