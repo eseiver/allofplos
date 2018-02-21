@@ -118,8 +118,8 @@ class ContributorList():
             aff_keys = contrib.rid_dict.get('aff')
             if aff_keys:
                 contrib.affiliations = [self.aff_dict[k] for k in aff_keys]
-            elif self.aff_dict and not contrib['name'].get('group_name', None):  # exclude collabs
-                print('affiliations missing for {}, {}'.format(self.doi, contrib['name']))
+            # elif self.aff_dict and not contrib['name'].get('group_name', None):  # exclude collabs
+                # print('affiliations missing for {}, {}'.format(self.doi, contrib['name']))
 
     def match_contribs_to_fns(self):
         """Match the footnote values in self.id_dict to the rids for each contributor."""
@@ -155,13 +155,5 @@ class ContributorList():
                                 # this can happen if the email field is mult authors
                                 # ignore the rid in this case
                                 assert len(self.email_dict) > 1
-            if len(contrib.footnotes) > 1:
-                print(contrib.footnotes)
-
-
-
-
-
-
-
-
+            # if len(contrib.footnotes) > 1:
+            #     print(self.doi, contrib.footnotes)
