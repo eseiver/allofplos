@@ -40,6 +40,7 @@ from ..transformations import (BASE_URL_API, filename_to_doi, doi_to_path, doi_t
 from .. import Article
 from .gdrive import (download_file_from_google_drive, get_zip_metadata, unzip_articles,
                      ZIP_ID, LOCAL_ZIP, LOCAL_TEST_ZIP, TEST_ZIP_ID, min_files_for_valid_corpus)
+from . import Corpus
 
 help_str = "This program downloads a zip file with all PLOS articles and checks for updates"
 
@@ -172,7 +173,7 @@ def get_dois_needed_list(comparison_list=None, directory=None):
         directory = get_corpus_dir()
 
     # Transform local files to DOIs
-    local_article_list = [filename_to_doi(article) for article in listdir_nohidden(directory, '.xml')]
+    local_article_list = Corpus(directory).dois
 
     dois_needed_list = list(set(comparison_list) - set(local_article_list))
     if dois_needed_list:
@@ -214,8 +215,10 @@ def repo_download(dois, tempdir, ignore_existing=True):
     except FileExistsError:
         pass
 
+    temp_corpus = Corpus(tempdir)
+
     if ignore_existing:
-        existing_articles = [filename_to_doi(f) for f in listdir_nohidden(tempdir)]
+        existing_articles = temp_corpus.dois
         dois = set(dois) - set(existing_articles)
 
     for doi in tqdm(sorted(dois), disable=None):
