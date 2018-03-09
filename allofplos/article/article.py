@@ -7,12 +7,12 @@ import lxml.etree as et
 from lxml import objectify
 import requests
 
-from . import get_corpus_dir
-from .transformations import (filename_to_doi, _get_base_page, LANDING_PAGE_SUFFIX,
-                              URL_SUFFIX, plos_page_dict, doi_url)
-from .plos_regex import validate_doi
-from .elements import (parse_article_date, get_contrib_info,
-                       Journal, License, match_contribs_to_dicts)
+from .. import get_corpus_dir
+from ..transformations import (filename_to_doi, _get_base_page, LANDING_PAGE_SUFFIX,
+                               URL_SUFFIX, plos_page_dict, doi_url)
+from ..plos_regex import validate_doi
+from ..elements import (parse_article_date, get_contrib_info,
+                        Journal, License, match_contribs_to_dicts)
 
 
 class Article():
@@ -137,7 +137,10 @@ class Article():
         :returns: DOI and title
         :rtype: {str}
         """
-        out = "DOI: {0}\nTitle: {1}".format(self.doi, self.title)
+        if self.local:
+            out = "DOI: {0}\nTitle: {1}".format(self.doi, self.title)
+        else:
+            out = "Article container DOI: {0}".format(self.doi)
         return out
 
     def doi_link(self):
@@ -804,7 +807,10 @@ class Article():
     def root(self):
         """Get the root (base) element of an article.
         """
-        return self.tree.getroot()
+        if self.tree:
+            return self.tree.getroot()
+        else:
+            return None
 
     def get_page(self, page_type='article'):
         """Get any of the PLOS URLs associated with a particular DOI.
