@@ -45,7 +45,7 @@ class Author(Contributor):
         if corr:
             author_type = answer_dict.get(corr, None)
         else:
-            temp = self.rid_dict.get('corresp', None)
+            temp = any(k.startswith('cor') for k in self.rid_dict.keys()) + any(v.startswith('cor') for v in self.rid_dict.values()) 
             if temp:
                 author_type = answer_dict.get("yes", None)
             else:

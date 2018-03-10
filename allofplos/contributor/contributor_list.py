@@ -157,14 +157,15 @@ class ContributorList():
                 #                 # ignore the rid in this case
                 #                 assert len(self.email_dict) > 1
             for rid, rid_type in contrib.rid_dict.items():
-                value = self.id_dict[rid]
-                if rid_type == 'aff':
-                    contrib.affiliations.append(value)
-                else:
-                    if contrib.footnotes.get(rid_type, None):
-                        contrib.footnotes[rid_type].update(value)
+                if rid_type != 'corresp':
+                    value = self.id_dict[rid]
+                    if rid_type == 'aff':
+                        contrib.affiliations.append(value)
                     else:
-                        contrib.footnotes[rid_type] = value
+                        if contrib.footnotes.get(rid_type, None):
+                            contrib.footnotes[rid_type].update(value)
+                        else:
+                            contrib.footnotes[rid_type] = value
             # print(contrib.footnotes, contrib.affiliations)
 
 
