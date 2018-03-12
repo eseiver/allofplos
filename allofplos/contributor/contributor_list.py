@@ -30,6 +30,7 @@ class ContributorList():
         self.get_contributors()
         # self.match_contribs_to_affs()
         self.match_contribs_to_rids()
+        self.corresponding = self.get_corresponding_authors()
 
     def parse_author_notes(self):
         """Parse footnotes and author notes into email_dict, credit_dict, and id_dict."""
