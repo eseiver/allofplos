@@ -136,12 +136,14 @@ class Contributor():
             if item.tag == 'contrib-id':
                 contrib_id_type = item.attrib.get('contrib-id-type', None)
                 contrib_id = item.text
-                contrib_authenticated = item.attrib.get('authenticated', None)
+                contrib_authenticated = item.attrib.get('authenticated', False)
+                if contrib_authenticated:
+                    contrib_authenticated = contrib_authenticated.title()
                 id_dict = dict(id_type=contrib_id_type,
                                id=contrib_id,
                                authenticated=contrib_authenticated
                                )
                 id_list.append(id_dict)
 
-        return id_list
+        self.ids = id_list
 
