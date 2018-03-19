@@ -158,7 +158,7 @@ class ContributorList():
                 #                 # ignore the rid in this case
                 #                 assert len(self.email_dict) > 1
             for rid, rid_type in contrib.rid_dict.items():
-                if rid_type != 'corresp':
+                if rid_type != 'corresp' and not rid.startswith(('cor', 'edit')) and rid not in self.email_dict.keys():  # avoid matching emails
                     value = self.id_dict[rid]
                     if rid_type == 'aff':
                         contrib.affiliations.append(value)
