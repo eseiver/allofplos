@@ -66,7 +66,7 @@ class Contributor():
         #                 rid_dict['aff'] = aff_items
         #             rid_dict[k] = [item for item in v if not item.startswith('aff')]
         for elem in subelems:
-            if elem.tag == 'xref':
+            if elem.tag == 'xref' and elem.attrib.get('rid'):
                 rid_dict[elem.attrib['rid']] = elem.attrib.get('ref-type', 'fn')
 
         self.rid_dict = rid_dict
