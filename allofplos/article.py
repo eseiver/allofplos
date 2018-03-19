@@ -376,6 +376,12 @@ class Article:
                             except AttributeError:
                                 aff_text_fixed = et.tostring(sub_el, encoding='unicode', method='text')
                             aff_dict[el.attrib['id']] = aff_text_fixed
+                            break
+                    if not aff_dict.get(el.attrib['id']):
+                        # where there's sub-elements but not an 'addr-line' sub-element
+                        string = et.tostring(el, method='text', encoding='unicode')
+                        string = string.strip().lstrip('1234567890').strip().lstrip('1234567890').strip()
+                        aff_dict[el.attrib['id']] = string
                 else:
                     # the address for some affiliations is not wrapped in an addr-line tag
                     aff_dict[el.attrib['id']] = el.text.replace('\n', '').replace('\r', '').replace('\t', '')
@@ -428,9 +434,9 @@ class Article:
         """Collect and pass to Contributor class its needed info. Memoize result."""
         if self._contributors is None:
             self._contributors = ContributorList(self.contrib_list,
-                                           self.aff_dict(),
-                                           self.author_notes,
-                                           doi=self.doi)
+                                                 self.aff_dict(),
+                                                 self.author_notes,
+                                                 doi=self.doi)
         return self._contributors
 
     def get_fn_dict(self):
