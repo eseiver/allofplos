@@ -83,7 +83,7 @@ class ContributorList():
                                et.tostring(el,
                                            method='text',
                                            encoding='unicode'))
-            elem_text = re.sub('[a-z]Current', 'Current', elem_text).lstrip('a').lstrip('b').lstrip('c').strip()
+            elem_text = re.sub('[a-z]Current', 'Current', elem_text).lstrip('abcdefghijkl').strip()
             fn_dict[el.attrib.get('fn-type')] = elem_text
             id_dict[idd] = fn_dict
 
