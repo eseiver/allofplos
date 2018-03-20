@@ -24,6 +24,7 @@ class ContributorList():
         self.email_dict = None
         self.credit_dict = None
         self.id_dict = None
+        self.fn_dict = None
         self.parse_author_notes()
         self.authors = None
         self.editors = None
@@ -74,9 +75,11 @@ class ContributorList():
 
         fn_dict = {}
         id_dict = {}
+        count = 1
         for el in fn_misc:
-            fn_dict = {}
+            info_dict = {}
             idd = el.attrib.get('id')
+            # an id exists for matching, so add it to id_dict
             assert id_dict.get(idd) is None
             elem_text = re.sub('^[^a-zA-z]*|[^a-zA-Z]*$',
                                '',
@@ -84,8 +87,14 @@ class ContributorList():
                                            method='text',
                                            encoding='unicode'))
             elem_text = re.sub('[a-z]Current', 'Current', elem_text).lstrip('abcdefghijkl').strip()
-            fn_dict[el.attrib.get('fn-type')] = elem_text
-            id_dict[idd] = fn_dict
+            info_dict[el.attrib.get('fn-type')] = elem_text
+            if idd:
+                id_dict[idd] = info_dict
+            else:
+                # no id, so goes into a different dictionary (can't be matched to individuals)
+                idd = 'footnote' + str(count)
+                fn_dict[idd] = info_dict
+                count += 1
 
         # # add key-value pairs in aff_dict to id_dict
         id_dict.update(self.aff_dict)
@@ -93,6 +102,7 @@ class ContributorList():
         self.email_dict = email_dict
         self.credit_dict = credit_dict
         self.id_dict = id_dict
+        self.fn_dict = fn_dict
 
     def get_contributors(self):
         if self.authors is None and self.editors is None:
@@ -159,14 +169,18 @@ class ContributorList():
                 #                 assert len(self.email_dict) > 1
             for rid, rid_type in contrib.rid_dict.items():
                 if rid_type != 'corresp' and not rid.startswith(('cor', 'edit')) and rid not in self.email_dict.keys():  # avoid matching emails
-                    value = self.id_dict[rid]
-                    if rid_type == 'aff':
-                        contrib.affiliations.append(value)
-                    else:
-                        if contrib.footnotes.get(rid_type, None):
-                            contrib.footnotes[rid_type].update(value)
+                    try:
+                        value = self.id_dict[rid]
+                        if rid_type == 'aff' or rid.startswith('aff'):
+                            contrib.affiliations.append(value)
                         else:
-                            contrib.footnotes[rid_type] = value
+                            if contrib.footnotes.get(rid, None):
+                                contrib.footnotes[rid].update(value)
+                            else:
+                                contrib.footnotes[rid] = value
+                    except KeyError:
+                        # this may not be a problem (e.g., bad rid_type like 10.1371/journal.pmed.0010065)
+                        print('unmatched key {} in {}'.format(rid, self.doi))
             # print(contrib.footnotes, contrib.affiliations)
 
 
