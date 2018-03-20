@@ -144,10 +144,10 @@ def get_credit_dict(doi, con_elem):
             con_list = sub_el.getchildren()
             for con_item in con_list:
                 contribution = con_item[0][0].text.rstrip(':')
-                contributor_initials = (con_item[0][0].tail.lstrip(' ').rstrip('.')).split(' ')
-                contributor_initials = [regex.sub('', v) for v in contributor_initials]
-                initials_list.extend(contributor_initials)
-                contrib_dict[contribution] = contributor_initials
+                contrib_initials = (con_item[0][0].tail.lstrip(' ').rstrip('.')).split(' ')
+                contrib_initials = [regex.sub('', v) for v in contrib_initials]
+                initials_list.extend(contrib_initials)
+                contrib_dict[contribution] = contrib_initials
 
     except IndexError:
         # for single strings, though it doesn't parse all of them correctly.
@@ -181,3 +181,42 @@ def get_credit_dict(doi, con_elem):
                 contrib_list.append(k)
         author_contributions[initials] = contrib_list
     return author_contributions
+
+
+def match_contrib_initials_to_dict(contrib, special_dict, matched_keys):
+    """For an individual contributor, match their initials to a dictionary.
+    This is used for both matching contributors to email addresses as well as credit roles,
+    where the keys for all dictionaries are contributor initials. In contrib_dict, these initials are
+    constructed from the contributor name in get_contrib_name(). For the special dicts, initials are
+    provided in the raw XML.
+    See match_contribs_to_dicts() for how this matching process is iterated across contributors.
+    :param contrib: Contributor class object, has information about individual contributor, including their name and constructed initials
+    :param special_dict: usually either aff_dict() or get_credit_dict()
+    :param matched_keys: list of keys in special_dict already matched that will be excluded
+    :return: updated contrib_dict that includes the newly matched special_dict
+    """
+    contrib_initials = contrib.name['initials']
+    # special_dict keys (initials) are assumed to be uppercase
+    special_dict = {k.upper(): v
+                    for k, v in special_dict.items()
+                    if k not in matched_keys}
+    matched_value = None
+    matched_initials = None
+    if contrib.name.get('group_name', None) is None:
+        try:
+            matched_value = special_dict[contrib_initials.upper()]
+            matched_initials = contrib_initials.upper()
+        except KeyError:
+            # Sometimes middle initials are included or excluded, so restrict both initial sets to
+            # first and last initial only.
+            try:
+                contributor_abbrev_initials = ''.join([contrib_initials[0], contrib_initials[-1]])
+                for dict_initials, dict_value in special_dict.items():
+                    if contributor_abbrev_initials == ''.join([dict_initials[0], dict_initials[-1]]).upper():
+                        matched_value = dict_value
+                        matched_initials = dict_initials
+                        break
+            except (IndexError, KeyError) as e:
+                pass
+
+    return matched_initials, matched_value
