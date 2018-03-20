@@ -18,6 +18,9 @@ def corr_author_emails(doi, corresp_list):
     """
     corr_emails = {}
     email_list = []
+    regex_email = r'[\w\.-]+@[\w\.-]+'
+    email_finder = re.compile(regex_email)
+
     for elem in corresp_list:
         author_info = elem.getchildren()
         for i, item in enumerate(author_info):
@@ -83,12 +86,15 @@ def corr_author_emails(doi, corresp_list):
         for corresp in corresp_list:
             author_notes_field = et.tostring(corresp, method='text', encoding='unicode')
             if '@' in author_notes_field:
-                regex_email = r'[\w\.-]+@[\w\.-]+'
-                email_finder = re.compile(regex_email)
                 email_list = email_finder.findall(author_notes_field)
                 if email_list:
                     corr_emails['cor001'] = email_list
                     break
+    for k, v in corr_emails.items():
+        for email in v:
+            if email_finder.findall(email) is None:
+                print('Error in emails:', doi, corr_emails)
+                break
     return corr_emails
 
 
