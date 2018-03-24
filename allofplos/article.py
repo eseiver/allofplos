@@ -10,7 +10,7 @@ import requests
 from . import get_corpus_dir
 from .transformations import (filename_to_doi, _get_base_page, LANDING_PAGE_SUFFIX,
                               URL_SUFFIX, plos_page_dict, doi_url, doi_to_url, doi_to_path)
-from .plos_regex import validate_doi
+from .plos_regex import validate_doi, regexDOI
 from .elements import (parse_article_date, get_contrib_info,
                        Journal, License, match_contribs_to_dicts)
 from .utils import dedent
@@ -892,6 +892,62 @@ class Article:
                     subjs_dict['No subject'] = [tuple(e.text for e in
                                                  subj.iter('subject'))]
         return subjs_dict
+
+    @property
+    def data_availability(self):
+        """The content of the data availability statement.
+
+        Includes the plain text, as well as extracting external URLs, internal links
+        (supplementary materials), email addresses, and DOIs into a dictionary.
+        :return: dictionary of information about data availability statement
+        """
+        data_available = {}
+        xpath_results = self.root.xpath('/article/front/article-meta/custom-meta-group/custom-meta[@id="data-availability"]/meta-value')
+        if xpath_results:
+            data_available['external_links'] = set()
+            data_available['internal_links'] = []
+            data_available['emails'] = set()
+            data_available['dois'] = set()
+
+            # make sure data availability statement only appears once
+            assert len(xpath_results) == 1
+            data_avail = xpath_results[0]
+
+            # add plain text of the statement to data_available
+            da = et.tostring(data_avail, method='text', encoding='unicode').strip()
+            data_available['statement_text'] = da
+
+            # iterate through sub-elements of the statement and add to data_available
+            # convert tags to dictionary keys (renaming when appropriate/helpful)
+            for child in data_avail.getchildren():
+                attrib = child.attrib
+                attrib['text'] = child.text
+                if child.tag == 'ext-link':
+                    data_available['external_links'].add(attrib['{http://www.w3.org/1999/xlink}href'])
+                elif child.tag == 'email':
+                    data_available['emails'].add(child.text)
+
+                # exclude HTML markup in data_available
+                elif child.tag in ['italic', 'sup', 'bold', 'sub']:
+                    pass
+
+                # add other elements may have missed to data_available
+                elif data_available.get(child.tag) is None:
+                    data_available[child.tag] = [attrib]
+                else:
+                    data_available[child.tag].append(attrib)
+
+            # convert xref list into internal_links list (avoid duplicates)
+            if data_available.get('xref'):
+                data_available['internal_links'] = [dict(t) for t in set([tuple(d.items()) for d in data_available.pop('xref')])]
+
+            # find all DOIs from the statement text and remove duplicates
+            dois = regexDOI.findall(da)
+            if len(dois):
+                # clean up trailing characters on DOIs
+                data_available['dois'] = {doi.rstrip(',;)./') for doi in dois}
+
+        return data_available
 
     @property
     def filename(self):

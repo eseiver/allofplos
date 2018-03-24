@@ -24,6 +24,8 @@ full_doi_regex_search = re.compile(r"10\.1371/journal\.p[a-zA-Z]{3}\.[\d]{7}"
                                    "|10\.1371/annotation/[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}")
 currents_doi_regex = re.compile(regex_match_prefix+regex_body_currents)
 file_regex_match = re.compile(regex_file_search+r"\.xml")
+doi_regex = r"10\.\d{4,6}\/[^\"'&<% \t\n\r\f\v]+"
+regexDOI = re.compile(doi_regex)
 BASE_URL = 'http://journals.plos.org/plosone/article/file?id='
 URL_SUFFIX = '&type=manuscript'
 external_url_regex_match = re.compile(re.escape(BASE_URL) +
