@@ -587,7 +587,7 @@ class Article:
         """
 
         # TODO: param to remove unnecessary fields (initials) and dicts (rid_dict)
-        # TODO: also get funding information, data availability, COI, etc
+        # TODO: also get funding information, COI, etc
 
         # get dictionary of ids to institutional affiliations & all other footnotes
         aff_dict = self.get_aff_dict()
