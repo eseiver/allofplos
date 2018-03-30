@@ -54,7 +54,7 @@ class Author(Contributor):
         self.author_type = author_type
 
     def get_credit_taxonomy(self):
-        """Get the contributor roles from the CREDiT taxonomy element when it is present.
+        """Get the contributor roles from the CRediT taxonomy element when it is present.
         Right now, this is is equivalent to author roles.
         For more information about this data structure, see http://dictionary.casrai.org/Contributor_Roles
         :param contrib_element: An article XML element with the tag <contrib>
@@ -66,7 +66,7 @@ class Author(Contributor):
             if item.tag == 'role':
                 content_type = item.attrib.get('content-type', None)
                 if content_type == 'http://credit.casrai.org/':
-                    content_type = 'CASRAI CREDiT taxonomy'
+                    content_type = 'CASRAI CRediT taxonomy'
                 role = item.text
                 if not credit_dict.get(content_type, None):
                     credit_dict[content_type] = [role]

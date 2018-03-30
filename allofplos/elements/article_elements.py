@@ -173,7 +173,7 @@ def get_contrib_ids(contrib_element):
 
 
 def get_credit_taxonomy(contrib_element):
-    """Get the contributor roles from the CREDiT taxonomy element when it is present.
+    """Get the contributor roles from the CRediT taxonomy element when it is present.
     Right now, this is is equivalent to author roles.
     For more information about this data structure, see http://dictionary.casrai.org/Contributor_Roles
     :param contrib_element: An article XML element with the tag <contrib>
@@ -185,7 +185,7 @@ def get_credit_taxonomy(contrib_element):
         if item.tag == 'role':
             content_type = item.attrib.get('content-type', None)
             if content_type == 'http://credit.casrai.org/':
-                content_type = 'CASRAI CREDiT taxonomy'
+                content_type = 'CASRAI CRediT taxonomy'
             role = item.text
             if not credit_dict.get(content_type, None):
                 credit_dict[content_type] = [role]
@@ -264,7 +264,7 @@ def get_contrib_info(contrib_element):
     # get dictionary of contributor's footnote types to footnote ids
     contrib_dict['rid_dict'] = get_rid_dict(contrib_element)
 
-    # get dictionary of CREDiT taxonomy, if available
+    # get dictionary of CRediT taxonomy, if available
     contrib_dict['author_roles'] = get_credit_taxonomy(contrib_element)
 
     return contrib_dict

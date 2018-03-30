@@ -123,12 +123,12 @@ def get_fn_list(fn_list):
 
 
 def get_credit_dict(doi, con_elem):
-    """For articles that don't use the CREDiT taxonomy, compile a dictionary of author
+    """For articles that don't use the CRediT taxonomy, compile a dictionary of author
     contribution types matched to author initials.
     Work in progress!!
     Works for highly formatted lists with subelements (e.g. '10.1371/journal.pone.0170354') and structured single strings
     (e.g. '10.1371/journal.pone.0050782'), but still fails for unusual strings (e.g, '10.1371/journal.pntd.0000072')
-    See also get_credit_taxonomy() for the CREDiT taxonomy version.
+    See also get_credit_taxonomy() for the CRediT taxonomy version.
     TODO: Use regex to properly separate author roles from initials for unusual strings.
     :return: dictionary mapping author initials to their author contributions/roles.
     """
