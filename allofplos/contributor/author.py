@@ -20,13 +20,14 @@ class Author(Contributor):
 
     Inherits from Contributor class.
     """
-    def __init__(self, contrib_element):
+    def __init__(self, contrib_element, position=0):
         Contributor.__init__(self, contrib_element, contrib_type='author')
         self.author_type = None
         self.get_author_type()
         self.credit_dict = None
         self.get_credit_taxonomy()
         self.email = None
+        self.position = position
 
     def get_author_type(self):
         """Get the type of author for a single contributor from their accompanying <contrib> element.

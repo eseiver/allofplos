@@ -108,15 +108,25 @@ class ContributorList():
         if self.authors is None and self.editors is None:
             author_list = []
             editor_list = []
+            author_count = 0
             for contrib_elem in self.contrib_elems():
                 if contrib_elem.attrib.get('contrib-type') == 'author':
-                    author_list.append(Author(contrib_elem))
+                    author_count += 1
+                    author_list.append(Author(contrib_elem, position=author_count))
                 elif contrib_elem.attrib.get('contrib-type') == 'editor':
                     editor_list.append(Editor(contrib_elem))
                 else:
                     assert contrib_elem.attrib.get('contrib-type') in ['author', 'editor']
             self.authors = author_list
             self.editors = editor_list
+            if len(self.authors):
+                self.first = author_list[0]
+                self.last = author_list[-1]
+                assert author_list[0].position == 1
+                assert author_list[-1].position == author_count
+            else:
+                self.first = None
+                self.last = None
         return self.authors + self.editors
 
     def get_corresponding_authors(self):
