@@ -8,5 +8,5 @@ six==1.11.0
 tqdm==4.19.9
 unidecode==1.0.22
 urllib3==1.22
-peewee==3.2.0
+peewee==3.2.2
 
