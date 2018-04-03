@@ -2,6 +2,8 @@ import lxml.etree as et
 import re
 import string
 
+from unidecode import unidecode
+
 contrib_keys = ['initials',
                 'given_names',
                 'surname',
@@ -105,9 +107,9 @@ class Contributor():
             if given_names or surname:
                 # construct initials if either given or surname is present
                 try:
-                    initials = ''.join([part[0].upper() for part in re.split('[-| |,|\.]+', given_names) if part]) + \
-                                      ''.join([part[0] for part in re.split('[-| |,|\.]+', surname) if part[0] in string.ascii_uppercase])
-                except (IndexError, TypeError) as e:
+                    initials = ''.join([part[0].upper() for part in re.split('[-| |,|\.]+', unidecode(given_names)) if part]) + \
+                                      ''.join([part[0] for part in re.split('[-| |,|\.]+', unidecode(surname)) if part[0] in string.ascii_uppercase])
+                except (IndexError, TypeError, AttributeError) as e:
                     initials = ''
                 contrib_name = dict(initials=initials,
                                     given_names=given_names,
