@@ -95,6 +95,7 @@ def corr_author_emails(doi, corresp_list):
             if email_finder.findall(email) is None:
                 print('Error in emails:', doi, corr_emails)
                 break
+    corr_emails = {k.replace('Email', ''): v for k,v in corr_emails.items()}
     return corr_emails
 
 
