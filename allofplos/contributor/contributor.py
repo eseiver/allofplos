@@ -149,3 +149,7 @@ class Contributor():
 
         self.ids = id_list
 
+    @property
+    def namestring(self):
+        """Turns given and family names into single ASCII string for email matching."""
+        return unidecode(''.join([self.name.get('given_names'), self.name.get('surname')]).lower())
