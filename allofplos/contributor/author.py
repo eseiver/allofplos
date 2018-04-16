@@ -26,7 +26,7 @@ class Author(Contributor):
         self.get_author_type()
         self.credit_dict = None
         self.get_credit_taxonomy()
-        self.email = None
+        self.email = []
         self.position = position
 
     def get_author_type(self):
