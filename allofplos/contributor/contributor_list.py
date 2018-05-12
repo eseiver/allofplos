@@ -5,6 +5,7 @@ from .author import Author
 from .editor import Editor
 
 from .contributor_elements import (corr_author_emails, get_credit_dict)
+from .email_matching import match_to_emails
 
 
 class ContributorList():
@@ -32,6 +33,7 @@ class ContributorList():
         # self.match_contribs_to_affs()
         self.match_contribs_to_rids()
         self.corresponding = self.get_corresponding_authors()
+        match_to_emails(self.authors, self.email_dict)
 
     def parse_author_notes(self):
         """Parse footnotes and author notes into email_dict, credit_dict, and id_dict."""
