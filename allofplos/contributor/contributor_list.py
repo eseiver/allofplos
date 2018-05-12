@@ -21,13 +21,13 @@ class ContributorList():
         self.contrib_elems = contrib_elems
         self.aff_dict = aff_dict
         self.author_notes = author_notes
-        self.email_dict = None
-        self.credit_dict = None
-        self.id_dict = None
-        self.fn_dict = None
+        self.email_dict = {}
+        self.credit_dict = {}
+        self.id_dict = {}
+        self.fn_dict = {}
         self.parse_author_notes()
-        self.authors = None
-        self.editors = None
+        self.authors = []
+        self.editors = []
         self.get_contributors()
         # self.match_contribs_to_affs()
         self.match_contribs_to_rids()
@@ -105,7 +105,7 @@ class ContributorList():
         self.fn_dict = fn_dict
 
     def get_contributors(self):
-        if self.authors is None and self.editors is None:
+        if not len(self.authors) and not len(self.editors):
             author_list = []
             editor_list = []
             author_count = 0
