@@ -150,6 +150,11 @@ class Contributor():
         self.ids = id_list
 
     @property
-    def namestring(self):
+    def namestrings(self):
         """Turns given and family names into single ASCII string for email matching."""
-        return unidecode(''.join([self.name.get('given_names'), self.name.get('surname')]).lower())
+        regex = re.compile('[^a-zA-Z]')
+        string_1 = unidecode(''.join([self.name.get('given_names', ''), self.name.get('surname', '')]).lower())
+        string_1 = regex.sub('', string_1)
+        string_2 = unidecode(''.join([self.name.get('surname', ''), self.name.get('given_names', '')]).lower())
+        string_2 = regex.sub('', string_2)
+        return string_1, string_2
