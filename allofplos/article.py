@@ -44,7 +44,7 @@ class Article:
         self._editor = None
         self._contributors = None
         self._contributors_old = None
-    
+
     def __eq__(self, other):
         doi_eq = self.doi == other.doi
         dir_eq = self.directory == other.directory
@@ -79,11 +79,10 @@ class Article:
         """
         out = "DOI: {0}\nTitle: {1}".format(self.doi, self.title)
         return out
-    
-    
+
     def _repr_html_(self):
         """Nice display for Jupyter notebook"""
-    
+
         titlestyle = 'display:inline-flex;'
         titletextstyle = 'margin-left:.5em;'
         titlelink = ('<span style="{titlestyle}"><a href="{url}">'
@@ -92,7 +91,7 @@ class Article:
                         title=self.title,
                         titlestyle=titlestyle+titletextstyle,
                     )
-                    
+
         doilink = '<span><a href="{url}"><code>{doi}</code></a></span>'.format(
                         url=self.doi_link(), 
                         doi=self.doi,
@@ -102,10 +101,9 @@ class Article:
         <span>DOI: <span>{doilink} 
         </div>
         """).format(doilink=doilink, titlelink=titlelink, titlestyle=titlestyle)
-    
+
         return out
-        
-        
+
     def reset_memoized_attrs(self):
         """Reset attributes to None when instantiating a new article object.
 
@@ -170,7 +168,6 @@ class Article:
             raise Exception("Invalid format for PLOS DOI: {}".format(d))
         self.reset_memoized_attrs()
         self._doi = d
-
 
     def doi_link(self):
         """The link of the DOI, which redirects to the journal URL."""
@@ -374,7 +371,7 @@ class Article:
                             try:
                                 aff_text_fixed = ' '.join([aff_string.strip() for aff_string in sub_el.text.splitlines()])
                             except AttributeError:
-                                aff_text_fixed = et.tostring(sub_el, encoding='unicode', method='text')
+                                aff_text_fixed = et.tostring(sub_el, encoding='unicode', method='text').strip()
                             aff_dict[el.attrib['id']] = aff_text_fixed
                             break
                     if not aff_dict.get(el.attrib['id']):
