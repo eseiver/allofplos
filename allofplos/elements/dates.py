@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime as dt
 
 
 class Dates():
@@ -29,18 +29,18 @@ class Dates():
         if day:
             date = (day, month, year)
             string_date = ' '.join(date)
-            date = datetime.datetime.strptime(string_date, date_format)
+            date = dt.strptime(string_date, date_format)
         elif month:
             # try both numerical & word versions of month
             date = (month, year)
             string_date = ' '.join(date)
             try:
-                date = datetime.datetime.strptime(string_date, '%m %Y')
+                date = dt.strptime(string_date, '%m %Y')
             except ValueError:
-                date = datetime.datetime.strptime(string_date, '%B %Y')
+                date = dt.strptime(string_date, '%B %Y')
         elif year:
             date = year
-            date = datetime.datetime.strptime(date, '%Y')
+            date = dt.strptime(date, '%Y')
         else:
             print('date error')
             date = ''
@@ -102,7 +102,7 @@ class Dates():
             for result in xpath_results:
                 if result.xpath('./meta-name')[0].text == 'Publication Update':
                     rev_date_string = result.xpath('./meta-value')[0].text
-                    rev_date = datetime.datetime.strptime(rev_date_string, '%Y-%m-%d')
+                    rev_date = dt.strptime(rev_date_string, '%Y-%m-%d')
                     break
                 else:
                     pass
