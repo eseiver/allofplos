@@ -4,10 +4,21 @@ from datetime import datetime as dt
 class Dates():
     """For parsing date elements of articles."""
 
-    def __init__(self, date_element, doi):
+    def __init__(self,
+                 pub_elements,
+                 hist_element,
+                 vor_element,
+                 doi,
+                 string_=False,
+                 string_format='%Y-%m-%d'):
         """Initialize an instance of the dates class."""
-        self.element = date_element
+        self.pub_elements = pub_elements
+        self.hist_element = hist_element
+        self.vor_element = vor_element
         self.doi = doi
+        self.dates = {}
+        self.string_ = string_
+        self.string_format = string_format
 
     def parse_article_date(date_element, date_format='%d %m %Y'):
         """
@@ -46,49 +57,44 @@ class Dates():
             date = ''
         return date
 
-    def get_dates(self, string_=False, string_format='%Y-%m-%d'):
-        """For an individual article, get all of its dates, including publication date (pubdate), submission date.
+    def get_pub_dates(self):
+        """For an individual article, get its publication dates (pubdate).
 
-        Defaults to datetime objects
-        :param string_: whether to return dates as a dictionary of strings
-        :param string_format: if string_ is True, the format to return the dates in
         :return: dict of date types mapped to datetime objects for that article
         :rtype: {dict}
         """
-        dates = {}
-        # first location is where pubdate and date added to collection are
-        tag_path_1 = ["/",
-                      "article",
-                      "front",
-                      "article-meta",
-                      "pub-date"]
-        element_list_1 = self.get_element_xpath(tag_path_elements=tag_path_1)
-        for element in element_list_1:
+        for element in self.pub_elements:
             pub_type = element.get('pub-type')
             try:
                 date = self.parse_article_date(element)
             except ValueError:
                 print('Error getting pubdates for {}'.format(self.doi))
                 date = ''
-            dates[pub_type] = date
+            self.dates[pub_type] = date
 
-        # second location is where historical dates are, including submission and acceptance
-        tag_path_2 = ["/",
-                      "article",
-                      "front",
-                      "article-meta",
-                      "history"]
-        element_list_2 = self.get_element_xpath(tag_path_elements=tag_path_2)
-        for element in element_list_2:
-            for part in element:
-                date_type = part.get('date-type')
-                try:
-                    date = self.parse_article_date(part)
-                except ValueError:
-                    print('Error getting history dates for {}'.format(self.doi))
-                    date = ''
-                dates[date_type] = date
+    def get_hist_dates(self):
+        """For an individual article, get all of its historical dates,
+        including submission and acceptance.
+        :return: dict of date types mapped to datetime objects for that article
+        :rtype: {dict}
+        """
+        for elem in self.hist_element:
+            date_type = elem.get('date-type')
+            try:
+                date = self.parse_article_date(elem)
+            except ValueError:
+                print('Error getting history dates for {}'.format(self.doi))
+                date = ''
+            self.dates[date_type] = date
 
+    def get_vor_dates(self):
+        """For an individual article, get date the VOR was published (update to uncorrected proof).
+        This field structures dates differently than the other date elements.
+        :param string_: whether to return dates as a dictionary of strings
+        :param string_format: if string_ is True, the format to return the dates in
+        :return: dict of date types mapped to datetime objects for that article
+        :rtype: {dict}
+        """
         # third location is for vor updates when it's updated (see `proof(self)`)
         rev_date = ''
         if self.proof == 'vor_update':
@@ -106,15 +112,16 @@ class Dates():
                     break
                 else:
                     pass
-        dates['updated'] = rev_date
+        self.dates['updated'] = rev_date
 
-        if string_:
-            # can return dates as strings instead of datetime objects if desired
-            for key, value in dates.items():
+    def convert_to_string(self):
+        """Convert all dates to strings if desired."""
+        if self.string_:
+            for key, value in self.dates.items():
                 if value:
-                    dates[key] = value.strftime(string_format)
+                    self.dates[key] = value.strftime(self.string_format)
 
-        return dates
+        return self.dates
 
     def dates_debug(self):
         """Whether the dates in self.get_dates() are in the correct order.
