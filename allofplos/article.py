@@ -112,6 +112,7 @@ class Article:
         self._tree = None
         self._local = None
         self._contributors = None
+        self._dates = None
 
     @property
     def doi(self):
@@ -262,6 +263,13 @@ class Article:
                     dates[key] = value.strftime(string_format)
 
         return dates
+
+    @property
+    def dates(self):
+        if self._dates is None:
+            self._dates = self.get_dates()
+        return self._dates
+    
 
     def dates_debug(self):
         """Whether the dates in self.get_dates() are in the correct order.
