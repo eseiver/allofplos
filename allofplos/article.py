@@ -244,15 +244,16 @@ class Article:
 
         # second location is where historical dates are, including submission and acceptance
         results = self.root.xpath('/article/front/article-meta/history')
-        assert len(results) == 0
+        assert len(results) == 1
         hist_element = results[0]
 
         # third location is for vor updates when it's updated (see `proof(self)`)
+        vor_element = None
         if self.proof == 'vor_update':
             vor_element = self.root.xpath('''/article/front/article-meta/custom-meta-group/
                                           custom-meta[./meta-name = "Publication Update"]''')[0]
 
-        dates = Dates.dates(pub_elements, hist_element, vor_element, self.doi, self.proof)
+        dates = Dates(pub_elements, hist_element, vor_element, self.doi, self.proof).dates
 
         if string_:
             # can return dates as strings instead of datetime objects if desired
