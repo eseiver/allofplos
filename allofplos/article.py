@@ -264,32 +264,11 @@ class Article:
 
     def dates_debug(self):
         """Whether the dates in self.get_dates() are in the correct order.
-
-        check whether date received is before date accepted, is before pubdate
-        accounts for potentially missing date fields
         :return: if dates are in right order or not
         :rtype: bool
         """
-        dates = self.get_dates()
-        if dates.get('received', '') and dates.get('accepted', ''):
-            if dates['received'] <= dates['accepted'] <= dates['epub']:
-                order_correct = True
-            else:
-                order_correct = False
-        elif dates.get('received', ''):
-            if dates['received'] <= dates['epub']:
-                order_correct = True
-            else:
-                order_correct = False
-        elif dates.get('accepted', ''):
-            if dates['accepted'] <= dates['epub']:
-                order_correct = True
-            else:
-                order_correct = False
-        else:
-            order_correct = True
 
-        return order_correct
+        return Dates.debug()
 
     @property
     def volume(self):

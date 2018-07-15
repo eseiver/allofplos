@@ -103,27 +103,26 @@ class Dates():
 
         self.dates['updated'] = rev_date
 
-    def dates_debug(self):
-        """Whether the dates in self.get_dates() are in the correct order.
+    def debug(self):
+        """Whether the dates in self.dates are in the correct order.
 
         check whether date received is before date accepted, is before pubdate
         accounts for potentially missing date fields
         :return: if dates are in right order or not
         :rtype: bool
         """
-        dates = self.get_dates()
-        if dates.get('received', '') and dates.get('accepted', ''):
-            if dates['received'] <= dates['accepted'] <= dates['epub']:
+        if self.dates.get('received', '') and self.dates.get('accepted', ''):
+            if self.dates['received'] <= self.dates['accepted'] <= self.dates['epub']:
                 order_correct = True
             else:
                 order_correct = False
-        elif dates.get('received', ''):
-            if dates['received'] <= dates['epub']:
+        elif self.dates.get('received', ''):
+            if self.dates['received'] <= self.dates['epub']:
                 order_correct = True
             else:
                 order_correct = False
-        elif dates.get('accepted', ''):
-            if dates['accepted'] <= dates['epub']:
+        elif self.dates.get('accepted', ''):
+            if self.dates['accepted'] <= self.dates['epub']:
                 order_correct = True
             else:
                 order_correct = False
