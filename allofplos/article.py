@@ -11,8 +11,7 @@ from . import get_corpus_dir
 from .transformations import (filename_to_doi, _get_base_page, LANDING_PAGE_SUFFIX,
                               URL_SUFFIX, plos_page_dict, doi_url, doi_to_url, doi_to_path)
 from .plos_regex import validate_doi
-from .elements import (parse_article_date, get_contrib_info,
-                       Journal, License, match_contribs_to_dicts)
+from .elements import (get_contrib_info, Journal, License, Dates, match_contribs_to_dicts)
 from .utils import dedent
 
 
@@ -252,6 +251,8 @@ class Article:
         if self.proof == 'vor_update':
             vor_element = self.root.xpath('''/article/front/article-meta/custom-meta-group/
                                           custom-meta[./meta-name = "Publication Update"]''')[0]
+
+        dates = Dates.dates(pub_elements, hist_element, vor_element, self.doi, self.proof)
 
         if string_:
             # can return dates as strings instead of datetime objects if desired
