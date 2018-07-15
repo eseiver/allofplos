@@ -18,6 +18,9 @@ class Dates():
         self.doi = doi
         self.proof = proof
         self.dates = {}
+        self.get_pub_dates()
+        self.get_hist_dates()
+        self.get_vor_dates()
 
     def parse_article_date(date_element, date_format='%d %m %Y'):
         """
