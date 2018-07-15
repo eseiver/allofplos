@@ -245,8 +245,11 @@ class Article:
 
         # second location is where historical dates are, including submission and acceptance
         results = self.root.xpath('/article/front/article-meta/history')
-        assert len(results) == 1
-        hist_element = results[0]
+        assert len(results) < 2
+        if len(results):
+            hist_element = results[0]
+        else:
+            hist_element = ''
 
         # third location is for vor updates when it's updated (see `proof(self)`)
         vor_element = None
