@@ -106,11 +106,18 @@ class Dates():
     def debug(self):
         """Whether the dates in self.dates are in the correct order.
 
+        check whether updated date is after pubdate for VORs
         check whether date received is before date accepted, is before pubdate
         accounts for potentially missing date fields
         :return: if dates are in right order or not
         :rtype: bool
         """
+        if self.proof == 'vor_update':
+            if self.dates['epub'] > self.dates['updated']:
+                return False
+            else:
+                pass
+
         if self.dates.get('received', '') and self.dates.get('accepted', ''):
             if self.dates['received'] <= self.dates['accepted'] <= self.dates['epub']:
                 order_correct = True
