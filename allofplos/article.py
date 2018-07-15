@@ -269,7 +269,7 @@ class Article:
         :rtype: bool
         """
 
-        return Dates.debug()
+        return Dates.debug(proof=self.proof, dates=self.dates)
 
     @property
     def volume(self):

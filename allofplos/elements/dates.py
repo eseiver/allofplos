@@ -103,7 +103,8 @@ class Dates():
 
         self.dates['updated'] = rev_date
 
-    def debug(self):
+    @staticmethod
+    def debug(proof, dates):
         """Whether the dates in self.dates are in the correct order.
 
         check whether updated date is after pubdate for VORs
@@ -112,24 +113,24 @@ class Dates():
         :return: if dates are in right order or not
         :rtype: bool
         """
-        if self.proof == 'vor_update':
-            if self.dates['epub'] > self.dates['updated']:
+        if proof == 'vor_update':
+            if dates['epub'] > dates['updated']:
                 return False
             else:
                 pass
 
-        if self.dates.get('received', '') and self.dates.get('accepted', ''):
-            if self.dates['received'] <= self.dates['accepted'] <= self.dates['epub']:
+        if dates.get('received', '') and dates.get('accepted', ''):
+            if dates['received'] <= dates['accepted'] <= dates['epub']:
                 order_correct = True
             else:
                 order_correct = False
-        elif self.dates.get('received', ''):
-            if self.dates['received'] <= self.dates['epub']:
+        elif dates.get('received', ''):
+            if dates['received'] <= dates['epub']:
                 order_correct = True
             else:
                 order_correct = False
-        elif self.dates.get('accepted', ''):
-            if self.dates['accepted'] <= self.dates['epub']:
+        elif dates.get('accepted', ''):
+            if dates['accepted'] <= dates['epub']:
                 order_correct = True
             else:
                 order_correct = False
