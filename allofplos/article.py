@@ -241,56 +241,17 @@ class Article:
         """
         dates = {}
         # first location is where pubdate and date added to collection are
-        tag_path_1 = ["/",
-                      "article",
-                      "front",
-                      "article-meta",
-                      "pub-date"]
-        element_list_1 = self.get_element_xpath(tag_path_elements=tag_path_1)
-        for element in element_list_1:
-            pub_type = element.get('pub-type')
-            try:
-                date = parse_article_date(element)
-            except ValueError:
-                print('Error getting pubdates for {}'.format(self.doi))
-                date = ''
-            dates[pub_type] = date
+        pub_elements = self.root.xpath('/article/front/article-meta/pub-date')
 
         # second location is where historical dates are, including submission and acceptance
-        tag_path_2 = ["/",
-                      "article",
-                      "front",
-                      "article-meta",
-                      "history"]
-        element_list_2 = self.get_element_xpath(tag_path_elements=tag_path_2)
-        for element in element_list_2:
-            for part in element:
-                date_type = part.get('date-type')
-                try:
-                    date = parse_article_date(part)
-                except ValueError:
-                    print('Error getting history dates for {}'.format(self.doi))
-                    date = ''
-                dates[date_type] = date
+        results = self.root.xpath('/article/front/article-meta/history')
+        assert len(results) == 0
+        hist_element = results[0]
 
         # third location is for vor updates when it's updated (see `proof(self)`)
-        rev_date = ''
         if self.proof == 'vor_update':
-            tag_path = ('/',
-                        'article',
-                        'front',
-                        'article-meta',
-                        'custom-meta-group',
-                        'custom-meta')
-            xpath_results = self.get_element_xpath(tag_path_elements=tag_path)
-            for result in xpath_results:
-                if result.xpath('./meta-name')[0].text == 'Publication Update':
-                    rev_date_string = result.xpath('./meta-value')[0].text
-                    rev_date = datetime.datetime.strptime(rev_date_string, '%Y-%m-%d')
-                    break
-                else:
-                    pass
-        dates['updated'] = rev_date
+            vor_element = self.root.xpath('''/article/front/article-meta/custom-meta-group/
+                                          custom-meta[./meta-name = "Publication Update"]''')[0]
 
         if string_:
             # can return dates as strings instead of datetime objects if desired
