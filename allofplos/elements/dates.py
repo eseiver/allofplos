@@ -9,16 +9,15 @@ class Dates():
                  hist_element,
                  vor_element,
                  doi,
-                 string_=False,
-                 string_format='%Y-%m-%d'):
+                 proof,
+                 ):
         """Initialize an instance of the dates class."""
         self.pub_elements = pub_elements
         self.hist_element = hist_element
         self.vor_element = vor_element
         self.doi = doi
+        self.proof = proof
         self.dates = {}
-        self.string_ = string_
-        self.string_format = string_format
 
     def parse_article_date(date_element, date_format='%d %m %Y'):
         """
@@ -90,38 +89,16 @@ class Dates():
     def get_vor_dates(self):
         """For an individual article, get date the VOR was published (update to uncorrected proof).
         This field structures dates differently than the other date elements.
-        :param string_: whether to return dates as a dictionary of strings
-        :param string_format: if string_ is True, the format to return the dates in
         :return: dict of date types mapped to datetime objects for that article
         :rtype: {dict}
         """
         # third location is for vor updates when it's updated (see `proof(self)`)
         rev_date = ''
         if self.proof == 'vor_update':
-            tag_path = ('/',
-                        'article',
-                        'front',
-                        'article-meta',
-                        'custom-meta-group',
-                        'custom-meta')
-            xpath_results = self.get_element_xpath(tag_path_elements=tag_path)
-            for result in xpath_results:
-                if result.xpath('./meta-name')[0].text == 'Publication Update':
-                    rev_date_string = result.xpath('./meta-value')[0].text
-                    rev_date = dt.strptime(rev_date_string, '%Y-%m-%d')
-                    break
-                else:
-                    pass
+            rev_date_string = self.vor_element.xpath('./meta-value')[0].text
+            rev_date = dt.strptime(rev_date_string, '%Y-%m-%d')
+
         self.dates['updated'] = rev_date
-
-    def convert_to_string(self):
-        """Convert all dates to strings if desired."""
-        if self.string_:
-            for key, value in self.dates.items():
-                if value:
-                    self.dates[key] = value.strftime(self.string_format)
-
-        return self.dates
 
     def dates_debug(self):
         """Whether the dates in self.get_dates() are in the correct order.
