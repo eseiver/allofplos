@@ -22,7 +22,7 @@ class Dates():
         self.get_hist_dates()
         self.get_vor_dates()
 
-    def parse_article_date(date_element, date_format='%d %m %Y'):
+    def parse_article_date(self, date_element, date_format='%d %m %Y'):
         """
         For an article date element, convert XML to a datetime object.
         :param date_element: An article XML element that contains a date
