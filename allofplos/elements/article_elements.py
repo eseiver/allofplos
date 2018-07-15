@@ -2,51 +2,12 @@
 
 Eventually these functions will probably need to be a class.
 """
-import datetime
 import difflib
 import re
 import string
 
 import lxml.etree as et
 import unidecode
-
-
-def parse_article_date(date_element, date_format='%d %m %Y'):
-    """
-    For an article date element, convert XML to a datetime object.
-    :param date_element: An article XML element that contains a date
-    :param date_format: string format used to convert to datetime object
-    :return: datetime object
-    """
-    day = ''
-    month = ''
-    year = ''
-    for item in date_element.getchildren():
-        if item.tag == 'day':
-            day = item.text
-        if item.tag == 'month':
-            month = item.text
-        if item.tag == 'year':
-            year = item.text
-    if day:
-        date = (day, month, year)
-        string_date = ' '.join(date)
-        date = datetime.datetime.strptime(string_date, date_format)
-    elif month:
-        # try both numerical & word versions of month
-        date = (month, year)
-        string_date = ' '.join(date)
-        try:
-            date = datetime.datetime.strptime(string_date, '%m %Y')
-        except ValueError:
-            date = datetime.datetime.strptime(string_date, '%B %Y')
-    elif year:
-        date = year
-        date = datetime.datetime.strptime(date, '%Y')
-    else:
-        print('date error')
-        date = ''
-    return date
 
 
 def get_rid_dict(contrib_element):
